@@ -1,0 +1,11 @@
+{
+    "fn1":["Add", 
+            ["Sin",  ["Substract","Pi","B"] ],
+            ["Multiply", 
+                ["Sqrt","B"], 
+                ["Power", "A","B"] 
+            ]  
+        ],
+    "fn2":["Multiply", "A", "Pi"],
+    "fn3":["Exp", ["Multiply", "ImaginaryUnit", "Pi"]]
+}

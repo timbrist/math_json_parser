@@ -1,5 +1,6 @@
 
-import math
+import polars as pl
+
 
 class MathParser:
     #Relational Operators
@@ -35,13 +36,8 @@ class MathParser:
     def root(x,n):
         return x**(1/n)
 
-    def sin(x):
-        return math.sin(x)
+
     operator_map = {
-        #Constants 
-        "ExponentialE":math.e,
-        "ImaginaryUnit": complex(0,1), # TODO: complex number 
-        "MachineEpsilon": "2**(-52)",
 
         #Relational Operators
         "Equal":equal,
@@ -63,26 +59,25 @@ class MathParser:
         "Square":lambda x: x**2,
 
         #Transcendental Functions
-        "Exp":lambda x: math.exp(x),
-        "Ln": lambda x: math.log(x),
-        "Log": lambda x, base: math.log(x,base),
-        "Lb": lambda x: math.log2(x),
-        "Lg": lambda x: math.log10(x),
-        "LogOnePlus": lambda x: math.log1p(x),
+        "Exp":lambda x: pl.Expr.exp(x),
+        "Ln": lambda x: pl.Expr.log(x),
+        "Log": lambda x, base: pl.Expr.log(x,base),
+        #"Lb": lambda x: pl.Expr.log2(x),
+        "Lg": lambda x: pl.Expr.log10(x),
+        "LogOnePlus": lambda x: pl.Expr.log1p(x),
 
         #Rounding
-        "Abd": lambda x: abs(x),
-        "Ceil": lambda x: math.ceil(x),
+        "Abd": lambda x: pl.Expr.abs(x),
+        "Ceil": lambda x: pl.Expr.ceil(x),
         "Chop": "lambda x: chop(x)", #TODO: chop function
-        "Floor": lambda x: math.floor(x),
-        "Round": "lambda x: math.round(x)",#TODO:
+        "Floor": lambda x: pl.Expr.floor(x),
+        "Round": "lambda x: pl.Expr.round(x)",#TODO:
 
         #Trigonometry
-        "Degrees":math.degrees,
-        "Pi":math.pi,
-        "Sin": sin,
-        "Cos":lambda x : math.cos(x),
-        "Tan":lambda x : math.tan(x),
+        #"Degrees":pl.Expr.degrees,
+        "Sin": lambda x: pl.Expr.sin(x),
+        "Cos":lambda x : pl.Expr.cos(x),
+        "Tan":lambda x : pl.Expr.tan(x),
     }
 
 print("Hello Operator Parser")
