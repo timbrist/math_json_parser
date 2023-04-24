@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "math-json-paraser"
+version = "0.1.0"
+description = "Take a Math-Json as Input then parse it into polars expres-"
+authors = ["sion and numpy expressi"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "math_json_paraser"},
+            {include = "math_json_paraser/math_json_paraser"}]
+
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
