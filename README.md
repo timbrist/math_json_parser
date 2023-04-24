@@ -1,4 +1,4 @@
-# math_json_paraser
+# math_json_parser
 parse MathJson in python, polars expression, numpy expression,
 
 Given any input follows MathJson formats,
