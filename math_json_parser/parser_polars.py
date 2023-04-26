@@ -54,26 +54,36 @@ class parser_polars:
         "Sqrt":lambda x: x**(1/2),
         "Square":lambda x: x**2,
 
-        #Transcendental Functions
+        #polars expression:
+        #https://pola-rs.github.io/polars/py-polars/html/reference/expressions/computation.html
+
+        "Abs": lambda x: pl.Expr.abs(x),
+        "Approch_Unique": lambda x: pl.Expr.approx_unique(x),
+        "Arccos": lambda x: pl.Expr.arccos(x),
+        "Arccosh": lambda x: pl.Expr.arccosh(x),
+        "Arcsin": lambda x: pl.Expr.arcsin(x),
+        "Arcsinh": lambda x: pl.Expr.arcsinh(x),
+        "Arctan": lambda x: pl.Expr.arctan(x),
+        "Arctanh": lambda x: pl.Expr.arctanh(x),
+        "Arg_Unique": lambda x: pl.Expr.arg_unique(x),
+        "Cos":lambda x : pl.Expr.cos(x),
+        "Cosh":lambda x: pl.Expr.cosh(x),
+
         "Exp":lambda x: pl.Expr.exp(x),
         "Ln": lambda x: pl.Expr.log(x),
         "Log": lambda x, base: pl.Expr.log(x,base),
-        #"Lb": lambda x: pl.Expr.log2(x),
         "Lg": lambda x: pl.Expr.log10(x),
         "LogOnePlus": lambda x: pl.Expr.log1p(x),
 
-        #Rounding
-        "Abd": lambda x: pl.Expr.abs(x),
-        "Ceil": lambda x: pl.Expr.ceil(x),
-        "Chop": "lambda x: chop(x)", #TODO: chop function
-        "Floor": lambda x: pl.Expr.floor(x),
-        "Round": "lambda x: pl.Expr.round(x)",#TODO:
 
-        #Trigonometry
-        #"Degrees":pl.Expr.degrees,
+
+        "Ceil": lambda x: pl.Expr.ceil(x),
+        "Floor": lambda x: pl.Expr.floor(x),
+
         "Sin": lambda x: pl.Expr.sin(x),
-        "Cos":lambda x : pl.Expr.cos(x),
+        "Sinh": lambda x: pl.Expr.sinh(x),
         "Tan":lambda x : pl.Expr.tan(x),
+        "Tanh":lambda x: pl.Expr.tanh(x),
     }
     def parser(self,textlist):
         if isinstance(textlist, list):

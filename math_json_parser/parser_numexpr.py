@@ -29,13 +29,13 @@ class parser_numexpr:
         "Tan":"tan",
         "Arcsin":"arcsin",#∀ x ∊ [ − 1 , 1 ] 
         "Arccos":"arccos",
-        "Arctan":"arctan",
+        "Arctan":"arctan", #∀ x ∊ ( − 1 , 1 )
         "Arctan2":"arctan2", #math.atan2(x,y)
         "Sinh":"sinh",
         "Cosh":"cosh",
         "Tanh":"tanh",
         "Arcsinh":"arcsinh",
-        "Arcosh":"arccosh",#∀x >= 1 ,
+        "Arccosh":"arccosh",#∀x >= 1 ,
         "Arctanh":"arctanh",
 
         #Transcendental Functions
