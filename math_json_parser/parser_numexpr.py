@@ -19,10 +19,9 @@ class parser_numexpr:
     }
     function_map = {
         "Sqrt":"sqrt",
-        "Exp":"exp",
         "Expm1":"expm1",
         #Rounding
-        "Abd": "abs",
+        "Abs": "abs",
 
         #Trigonometry
         "Sin": "sin",
@@ -53,20 +52,20 @@ class parser_numexpr:
 
     # convert math json into 1 dimenstion list 
     # ex: ["Multiply",["Sqrt","B"],["Power", "A","B"] ] -> ["Multiply","Sqrt","B","Power", "A","B" ]
-    expression = []
-    def decompose_list(self,l):
+    
+    def decompose_list(self,l,expr):
         for i in l:
             item_type = type(i)
             if item_type == list:
                 self.decompose_list(self,i)
             else:
-                self.expression.append(i)
+                expr.append(i)
     
     def parser(self, math_json):
         stack = []
-        self.decompose_list(math_json)
-        print(self.expression)
-        expr_list = list(reversed(self.expression))
+        expression = []
+        self.decompose_list(math_json,expression)
+        expr_list = list(reversed(expression))
         for i in expr_list:
             if i in self.expr["Operator"]:
                 p = self.expr["Operator"][i]
