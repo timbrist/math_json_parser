@@ -27,16 +27,16 @@ class parser_numexpr:
         "Sin": "sin",
         "Cos":"cos",
         "Tan":"tan",
-        "Arcsin":"arcsin",
+        "Arcsin":"arcsin",#∀ x ∊ [ − 1 , 1 ] 
         "Arccos":"arccos",
         "Arctan":"arctan",
-        "Arctan2":"Arctan2",
+        "Arctan2":"arctan2", #math.atan2(x,y)
         "Sinh":"sinh",
         "Cosh":"cosh",
         "Tanh":"tanh",
         "Arcsinh":"arcsinh",
-        "Arcosh":"arcosh",
-        "Artanh":"artanh",
+        "Arcosh":"arccosh",#∀x >= 1 ,
+        "Arctanh":"arctanh",
 
         #Transcendental Functions
         "Exp":"exp",
@@ -44,7 +44,6 @@ class parser_numexpr:
         "Lg": "log10",
         "LogOnePlus": "log1p",
     }
-
     expr = {
         "Operator": operator_map,
         "Function": function_map
