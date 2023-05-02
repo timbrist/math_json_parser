@@ -1,81 +1,72 @@
-
 class parser_numexpr:
     operator_map = {
         #Relational Operators
-        "Equal":"==",
-        "Greater":">",
-        "GreaterEqual":">=",
-        "Less":"<",
-        "LessEqual":"<=",
-        "NotEqual":"!=",
-
+        "Equal":                 lambda a,b: '(%s == %s)' % (a, b),  
+        "Greater":               lambda a,b: '(%s >  %s)' % (a, b),
+        "GreaterEqual":          lambda a,b: '(%s >= %s)' % (a, b),
+        "Less":                  lambda a,b: '(%s <  %s)' % (a, b),
+        "LessEqual":             lambda a,b: '(%s <= %s)' % (a, b),
+        "NotEqual":              lambda a,b: '(%s != %s)' % (a, b),
         #Functions
-        "Add":"+",
-        "Substract":"-",
-        "Negate":"-",
-        "Multiply":"*",
-        "Divide":"/",
-        "Power":"**",
+        "Add":                   lambda a,b: '(%s +  %s)' % (a, b),
+        "Substract":             lambda a,b: '(%s -  %s)' % (a, b),
+        "Negate":                lambda a,b: '(%s -  %s)' % (a, b),
+        "Multiply":              lambda a,b: '(%s *  %s)' % (a, b),
+        "Divide":                lambda a,b: '(%s /  %s)' % (a, b),
+        "Power":                 lambda a,b: '(%s ** %s)' % (a, b),
+        "Arctan2":               lambda a,b: 'arctan2(%s,%s)' % (a,b), #math.atan2(x,y)
     }
     function_map = {
-        "Sqrt":"sqrt",
-        "Expm1":"expm1",
+        "Sqrt":                  lambda a: 'sqrt(%s)' % (a), 
+        "Expm1":                 lambda a: 'expm1(%s)' % (a),
         #Rounding
-        "Abs": "abs",
+        "Abs":                   lambda a: 'abs(%s)' % (a),
 
         #Trigonometry
-        "Sin": "sin",
-        "Cos":"cos",
-        "Tan":"tan",
-        "Arcsin":"arcsin",#∀ x ∊ [ − 1 , 1 ] 
-        "Arccos":"arccos",
-        "Arctan":"arctan", #∀ x ∊ ( − 1 , 1 )
-        "Arctan2":"arctan2", #math.atan2(x,y)
-        "Sinh":"sinh",
-        "Cosh":"cosh",
-        "Tanh":"tanh",
-        "Arcsinh":"arcsinh",
-        "Arccosh":"arccosh",#∀x >= 1 ,
-        "Arctanh":"arctanh",
+        "Sin":                   lambda a: 'sin(%s)' % (a),
+        "Cos":                   lambda a: 'cos(%s)' % (a),
+        "Tan":                   lambda a: 'tan(%s)' % (a),
+        "Arcsin":                lambda a: 'arcsin(%s)' % (a),#∀ x ∊ [ − 1 , 1 ] 
+        "Arccos":                lambda a: 'arccos(%s)' % (a),
+        "Arctan":                lambda a: 'arctan(%s)' % (a), #∀ x ∊ ( − 1 , 1 )
+       
+        "Sinh":                  lambda a: 'sinh(%s)' % (a),
+        "Cosh":                  lambda a: 'cosh(%s)' % (a),
+        "Tanh":                  lambda a: 'tanh(%s)' % (a),
+        "Arcsinh":               lambda a: 'arcsinh(%s)' % (a),
+        "Arccosh":               lambda a: 'arccosh(%s)' % (a),#∀x >= 1 ,
+        "Arctanh":               lambda a: 'arctanh(%s)' % (a),
 
         #Transcendental Functions
-        "Exp":"exp",
-        "Ln": "log",
-        "Lg": "log10",
-        "LogOnePlus": "log1p",
+        "Exp":                   lambda a: 'exp(%s)' % (a),
+        "Ln":                    lambda a: 'log(%s)' % (a),
+        "Lg":                    lambda a: 'log10(%s)' % (a),
+        "LogOnePlus":            lambda a: '10g1p(%s)' % (a),
     }
     expr = {
         "Operator": operator_map,
         "Function": function_map
     }
 
-    # convert math json into 1 dimenstion list 
-    # ex: ["Multiply",["Sqrt","B"],["Power", "A","B"] ] -> ["Multiply","Sqrt","B","Power", "A","B" ]
-    
-    def decompose_list(self,l,expr):
-        for i in l:
-            item_type = type(i)
-            if item_type == list:
-                self.decompose_list(self,i)
+    def __init__(self) -> None:
+        self.numpy_expr = '' 
+    def set_numpy_expr(self, __expr: str) -> None:
+        self.numpy_expr = __expr
+    def get_numpy_expr(self) -> str:
+        return self.numpy_expr    
+
+    def parser2(self,textlist):
+        if isinstance(textlist, list):
+            operator = textlist[0]
+            parameter_len =  len(textlist[1:]) 
+            if parameter_len == 1:
+                return self.function_map[operator](self.parser2(textlist[1]))
+            elif parameter_len == 2:
+                return self.operator_map[operator](self.parser2(textlist[1]), self.parser2(textlist[2]))
             else:
-                expr.append(i)
-    
-    def parser(self, math_json):
-        stack = []
-        expression = []
-        self.decompose_list(math_json,expression)
-        expr_list = list(reversed(expression))
-        for i in expr_list:
-            if i in self.expr["Operator"]:
-                p = self.expr["Operator"][i]
-                op1 = stack.pop ()
-                op2 = stack.pop ()
-                stack.append ('(%s %s %s)' % (op1, p, op2) )
-            elif i in self.expr["Function"]:
-                p = self.expr["Function"][i]
-                op = stack.pop ()
-                stack.append ('%s(%s)' % (p, op) )
-            else:
-                stack.append (i)
-        return stack.pop()
+                print("number of parameter is exceed")
+        elif textlist not in self.operator_map:
+            self.set_numpy_expr(textlist)
+            return self.get_numpy_expr()
+        raise ValueError
 
