@@ -43,7 +43,7 @@ class parser_numexpr:
     def get_numpy_expr(self) -> str:
         return self.numpy_expr    
 
-    def parser2(self,textlist):
+    def parser(self,textlist):
         if isinstance(textlist, list):
             operator = textlist[0]
             parameter_len =  len(textlist[1:]) 
