@@ -40,6 +40,10 @@ class parser_polars:
         "Sinh":                   lambda x: pl.Expr.sinh(x),
         "Tan":                    lambda x: pl.Expr.tan(x),
         "Tanh":                   lambda x: pl.Expr.tanh(x),
+        "Max":                    lambda x: pl.Expr.max(x),
+        "Min":                    lambda x: pl.Expr.min(x),
+        "Sum":                    lambda x: pl.Expr.sum(x),
+        "Product":                lambda x: pl.Expr.product(x),
     }
     def parser(self,textlist):
         if isinstance(textlist, list):
