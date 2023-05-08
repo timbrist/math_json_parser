@@ -77,27 +77,32 @@ class parser_polars:
 
 
     def parser(self,textlist):
-        if isinstance(textlist, list):
-            operator = textlist[0]
-            parameter_len =  len(textlist[1:])  
-
-            for d in [self.operators,self.relational_operators,
-                      self.functions,self.transcendental_functions,
-                      self.rounding,self.trigonometric_functions]:
-                if operator in d: 
-                    if parameter_len == 1:
-                        return d[operator](self.parser(textlist[1]))
-                    elif parameter_len == 2:
-                        return d[operator](self.parser(textlist[1]), self.parser(textlist[2]))
-                    else:
-                        print("number of parameter is exceed")
-        #if the element is a constant than it should just return the number
-        elif isinstance(textlist, (int, float, complex) ):
-            return textlist
-        #if the element is common math simbol than it should return the constant number.
-        elif textlist in self.constants:
-            return self.constants[textlist]
-        #if the element is variable than use polars col.
-        else:
-            return pl.col(textlist) 
-        raise ValueError
+        try:
+            if isinstance(textlist, list):
+                operator = textlist[0]
+                parameter_len =  len(textlist[1:])  
+                #iterate all the dictionaries
+                for d in [self.operators,self.relational_operators,
+                        self.functions,self.transcendental_functions,
+                        self.rounding,self.trigonometric_functions]:
+                    #if the operator is found in a dictionary, parse it.
+                    if operator in d: 
+                        if parameter_len == 1:
+                            return d[operator](self.parser(textlist[1]))
+                        elif parameter_len == 2:
+                            return d[operator](self.parser(textlist[1]), self.parser(textlist[2]))
+                        else:
+                            print("number of parameter is exceed")
+            #if the element is a constant than it should just return the number
+            elif isinstance(textlist, (int, float, complex) ):
+                return textlist
+            #if the element is common math simbol than it should return the constant number.
+            elif textlist in self.constants:
+                return self.constants[textlist]
+            #if the element is variable than use polars col.
+            else:
+                return pl.col(textlist) 
+        except Exception as err:
+            print(f"Unexpected {err=}, {type(err)=}")
+            raise
+       
