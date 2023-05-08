@@ -14,13 +14,6 @@ class parser_polars:
         "Sum":                    lambda x: pl.Expr.sum(x),
         "Product":                lambda x: pl.Expr.product(x),
     }
-    constants = {
-        "ExponentialE":math.e,
-        "pi": math.pi,
-        "Pi": math.pi,
-        "e":math.e,
-        "Degree": math.pi/180,
-    }
     relational_operators = {
         #BOOL OPERATION
         "Equal":                 lambda a,b: a == b,#0
@@ -59,20 +52,25 @@ class parser_polars:
     }
     trigonometric_functions = {
         #TRIGONOMETRIC OPERATION
-        "Approch_Unique":         lambda x: pl.Expr.approx_unique(x),#15
         "Arccos":                 lambda x: pl.Expr.arccos(x),#  x ∊ [−1, 1] 
         "Arccosh":                lambda x: pl.Expr.arccosh(x),
         "Arcsin":                 lambda x: pl.Expr.arcsin(x),# x ∊ [−1, 1] 
         "Arcsinh":                lambda x: pl.Expr.arcsinh(x),
         "Arctan":                 lambda x: pl.Expr.arctan(x),#
         "Arctanh":                lambda x: pl.Expr.arctanh(x),# x ∊ (−INF,1] and [1,INF)
-        "Arg_Unique":             lambda x: pl.Expr.arg_unique(x),
         "Cos":                    lambda x: pl.Expr.cos(x),
         "Cosh":                   lambda x: pl.Expr.cosh(x),
         "Sin":                    lambda x: pl.Expr.sin(x),
         "Sinh":                   lambda x: pl.Expr.sinh(x),
         "Tan":                    lambda x: pl.Expr.tan(x),
         "Tanh":                   lambda x: pl.Expr.tanh(x),
+    }
+    constants = {
+        "ExponentialE":math.e,
+        "pi": math.pi,
+        "Pi": math.pi,
+        "e":math.e,
+        "Degree": math.pi/180,
     }
 
 
