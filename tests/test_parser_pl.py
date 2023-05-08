@@ -33,7 +33,7 @@ FUNCTION_CASES = [
         ["Negate","A"],
         ["Multiply","A","B"],
         ["Divide","A","B"],
-        ["Power","A","B"],
+        [" df.eval(test_result)Power","A","B"],
         ["Root","A","B"],
         ["Sqrt","A"],
         ["Squre","A"],
