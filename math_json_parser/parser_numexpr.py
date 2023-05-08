@@ -1,5 +1,9 @@
 import math
 
+#math json:
+#https://cortexjs.io/compute-engine/guides/standard-library/
+#numpy expression:
+#https://pandas.pydata.org/docs/user_guide/enhancingperf.html#enhancingperf-eval
 class parser_numexpr:
     operators = {
         #Pandas.eval() hasn't support the following operation yet.
