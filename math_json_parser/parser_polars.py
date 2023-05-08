@@ -25,15 +25,15 @@ class parser_polars:
     }
     functions = {
         #BASIC OPERATION
-        "Add":                   lambda a,b: a +  b,#6
+        "Add":                   lambda a,b: a +  b,#0
         "Substract":             lambda a,b: a -  b,
         "Negate":                lambda a  :     -a,
         "Multiply":              lambda a,b: a *  b,
         "Divide":                lambda a,b: a /  b,
         "Power":                 lambda a,b: a ** b,
         "Root":                  lambda a,b: a **(1/b),
-        "Sqrt":                  lambda a  : a **(1/2),#12
-        "Squre":                 lambda a  : a **(2),
+        "Sqrt":                  lambda a  : a **(1/2),
+        "Squre":                 lambda a  : a **(2),#8
     } 
     transcendental_functions = {
         #EXPONENTS AND LOGARITHMS
@@ -54,10 +54,10 @@ class parser_polars:
         #TRIGONOMETRIC OPERATION
         "Arccos":                 lambda x: pl.Expr.arccos(x),#  x ∊ [−1, 1] 
         "Arccosh":                lambda x: pl.Expr.arccosh(x),
-        "Arcsin":                 lambda x: pl.Expr.arcsin(x),# x ∊ [−1, 1] 
+        "Arcsin":                 lambda x: pl.Expr.arcsin(x),
         "Arcsinh":                lambda x: pl.Expr.arcsinh(x),
         "Arctan":                 lambda x: pl.Expr.arctan(x),#
-        "Arctanh":                lambda x: pl.Expr.arctanh(x),# x ∊ (−INF,1] and [1,INF)
+        "Arctanh":                lambda x: pl.Expr.arctanh(x),# # x ∊ [−1, 1] 
         "Cos":                    lambda x: pl.Expr.cos(x),
         "Cosh":                   lambda x: pl.Expr.cosh(x),
         "Sin":                    lambda x: pl.Expr.sin(x),

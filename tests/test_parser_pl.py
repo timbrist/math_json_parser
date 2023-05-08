@@ -24,17 +24,19 @@ RELATIONAL_CASES = [
         ["Greater","A","B"],
         ["GreaterEqual","A","B"],
         ["Less","A","B"],
-        ["LessEqual","A","B"],#5
+        ["LessEqual","A","B"],
         ["NotEqual","A","B"],
 ]
 FUNCTION_CASES = [
         ["Add","A","B"],
         ["Substract","A","B"],
         ["Negate","A"],
-        ["Multiply","A","B"],#10
+        ["Multiply","A","B"],
         ["Divide","A","B"],
         ["Power","A","B"],
+        ["Root","A","B"],
         ["Sqrt","A"],
+        ["Squre","A"],
 ]
 TRANSCENDENTAL_CASES = [
         ["Exp","A"],
@@ -46,22 +48,22 @@ TRANSCENDENTAL_CASES = [
 ]
 ROUNDING_CASES = [
         ["Abs","A"],
-        ["Ceil","X"],
-        ["Floor","X"],#35
+        ["Ceil","A"],
+        ["Floor","A"],
 ]
 TRIGONOMETRIC_CASES = [
-        ["Arccos","A"],
-        ["Arccosh","A"],
-        ["Arcsin","A"],
-        ["Arcsinh","A"],
-        ["Arctan","A"],#20
-        ["Arctanh","A"],
-        ["Cos","A"],
-        ["Cosh","A"],
-        ["Sin","A"],#25
-        ["Sinh","A"],
-        ["Tan","A"],
-        ["Tanh","A"],
+        ["Arccos","X"],
+        ["Arccosh","X1"],
+        ["Arcsin","X"],
+        ["Arcsinh","X"],
+        ["Arctan","X"],#20
+        ["Arctanh","X"],
+        ["Cos","X"],
+        ["Cosh","X"],
+        ["Sin","X"],#25
+        ["Sinh","X"],
+        ["Tan","X"],
+        ["Tanh","X"],
 ]
 
 
@@ -89,7 +91,9 @@ def test_simple_expr():
         str(pl.col("A") * pl.col("B")),
         str(pl.col("A") / pl.col("B")),
         str(pl.col("A") ** pl.col("B")),
+        str(pl.col("A") ** (1/pl.col("B"))),
         str(pl.col("A") ** (1/2)),
+        str(pl.col("A") ** (2)),
     ]
     expected_transcendental = [
         str(pl.col("A").exp()),
@@ -101,22 +105,22 @@ def test_simple_expr():
     ]
     expected_rouding = [
         str(pl.col("A").abs()),
-        str(pl.col("X").ceil()),
-        str(pl.col("X").floor()),
+        str(pl.col("A").ceil()),
+        str(pl.col("A").floor()),
     ]
     excepted_trigonometric =[
-        str(pl.col("A").arccos()),
-        str(pl.col("A").arccosh()),
-        str(pl.col("A").arcsin()),
-        str(pl.col("A").arcsinh()),
-        str(pl.col("A").arctan()),
-        str(pl.col("A").arctanh()),
-        str(pl.col("A").cos()),
-        str(pl.col("A").cosh()),
-        str(pl.col("A").sin()),
-        str(pl.col("A").sinh()),
-        str(pl.col("A").tan()),
-        str(pl.col("A").tanh()),
+        str(pl.col("X").arccos()),
+        str(pl.col("X1").arccosh()),
+        str(pl.col("X").arcsin()),
+        str(pl.col("X").arcsinh()),
+        str(pl.col("X").arctan()),
+        str(pl.col("X").arctanh()),
+        str(pl.col("X").cos()),
+        str(pl.col("X").cosh()),
+        str(pl.col("X").sin()),
+        str(pl.col("X").sinh()),
+        str(pl.col("X").tan()),
+        str(pl.col("X").tanh()),
     ]
     test_pp = pp.parser_polars()
     for i in range(len(OPERATROS_CASES)):
@@ -138,89 +142,151 @@ def test_simple_expr():
         test_result = test_pp.parser(TRIGONOMETRIC_CASES[i])
         assert str(test_result) == excepted_trigonometric[i]
 
-# #This function test parser to handle constant number 
-# def test_simple_constant():
-#     #integer test cases
-#     a = np.random.randint(1,10,size=(5))
-#     b = np.random.randint(1,10,size=(5))
-#     #  
-#     x1 = np.random.uniform(-1,1,size=(5))
-#     x2 = np.random.uniform(1,100,size=(5)) 
-#     print(x1)
-#     expected = [
-#         a == b,
-#         a >  b,
-#         a >= b,
-#         a <  b,
-#         a <= b,
-#         a != b,
-#         a +  b,
-#         a -  b,
-#         -a,
-#         a *  b,
-#         a /  b,
-#         a ** b,
-#         a ** (1/2),
-#         np.absolute(a),
-#         np.unique(a),
-#         np.arccos(x1),
-#         np.arccosh(a),
-#         np.arcsin(x1),
-#         np.arcsinh(a),
-#         np.arctan(a),
-#         np.arctanh(x1),
-#         np.unique(a),
-#         np.cos(a),
-#         np.cosh(a),
-#         np.sin(a),
-#         np.sinh(a),
-#         np.tan(a),
-#         np.tanh(a),
-#         np.exp(a),
-#         np.log(a),
-#     data = pl.DataFrame(var_dic)
-#     print("len = ", len(test_case))
-#     for i in range(len(test_case)):
-#         if i == 14:
-#             continue
-#         test_result = test_pp.parser(test_case[i])
-#         objective_result = data.select(
-#             test_result.alias("result")
-#         ).to_numpy()
-#         h = np.hstack(objective_result )
-#         #print("h=",h)
-#         #print('objective=', objective_result)
-#         for j in range(len(h)): 
-#             if math.isclose( h[j],expected[i][j],rel_tol=1e-5): 
-#                 print("error at: ", test_case[i])
-#     print ("done")
-#        np.ceil(x1),
-#         np.floor(x1),
-#         np.max(a),
-#         np.min(a),
-#         np.sum(a),
-#         np.product(a),
-#     ]
-#     test_pp = pp.parser_polars()
-#     test_case = TEST_CASES
-#     var_dic = {"A":a,"B":b,"X":x1}
-#     data = pl.DataFrame(var_dic)
-#     print("len = ", len(test_case))
-#     for i in range(len(test_case)):
-#         if i == 14:
-#             continue
-#         test_result = test_pp.parser(test_case[i])
-#         objective_result = data.select(
-#             test_result.alias("result")
-#         ).to_numpy()
-#         h = np.hstack(objective_result )
-#         #print("h=",h)
-#         #print('objective=', objective_result)
-#         for j in range(len(h)): 
-#             if math.isclose( h[j],expected[i][j],rel_tol=1e-5): 
-#                 print("error at: ", test_case[i])
-#     print ("done")
-        
-        
 
-#test simple expresion with one operator
+def test_simple_operators():
+    a = np.random.randint(100,size=(5))
+    expected = [
+        np.max(a),
+        np.min(a),
+        np.sum(a),
+        np.prod(a),
+    ]
+    var_dic = {"A":a}
+    data = pl.DataFrame(var_dic)
+    test_pp = pp.parser_polars()
+    for i in range(len(OPERATROS_CASES)):
+        test_result = test_pp.parser(OPERATROS_CASES[i])
+        objective_result = data.select(
+            test_result.alias("result")
+        ).to_numpy()
+        h = np.hstack(objective_result )
+        for j in range(len(h)): 
+            assert math.isclose( h[j], expected[i],rel_tol=1e-5)
+
+def test_simple_relational():
+    a = np.random.randint(100,size=(5))
+    b = np.random.randint(100,size=(5))
+    expected = [
+        a == b,
+        a >  b,
+        a >= b,
+        a <  b,
+        a <= b,
+        a != b,
+    ]
+    var_dic = {"A":a,"B":b}
+    data = pl.DataFrame(var_dic)
+    test_pp = pp.parser_polars()
+    for i in range(len(RELATIONAL_CASES)):
+        test_result = test_pp.parser(RELATIONAL_CASES[i])
+        objective_result = data.select(
+            test_result.alias("result")
+        ).to_numpy()
+        h = np.hstack(objective_result )
+        for j in range(len(h)): 
+            assert h[j] == expected[i][j]
+
+def test_simple_functions():
+    a = np.random.randint(1,10,size=(5))
+    b = np.random.randint(1,10,size=(5))
+    expected = [
+        a +  b,
+        a -  b,
+        -a,
+        a *  b,
+        a /  b,
+        a ** b,
+        a ** (1/b),
+        a ** (1/2),
+        a **(2),
+    ]
+    var_dic = {"A":a,"B":b}
+    data = pl.DataFrame(var_dic)
+    test_pp = pp.parser_polars()
+    for i in range(len(FUNCTION_CASES)):
+        test_result = test_pp.parser(FUNCTION_CASES[i])
+        objective_result = data.select(
+            test_result.alias("result")
+        ).to_numpy()
+        h = np.hstack(objective_result )
+        for j in range(len(h)): 
+            print(h[j], expected[i][j])
+            print(FUNCTION_CASES[i])
+            assert math.isclose( h[j], expected[i][j],rel_tol=1e-5)
+
+def test_simple_transcendental():
+    a = np.random.randint(1,100,size=(5))
+    expected = [
+        np.exp(a),
+        np.log(a),
+        np.emath.logn(4, a),
+        np.emath.logn(2, a),
+        np.log10(a),
+        np.log1p(a),
+    ]
+    var_dic = {"A":a}
+    data = pl.DataFrame(var_dic)
+    test_pp = pp.parser_polars()
+    for i in range(len(TRANSCENDENTAL_CASES)):
+        test_result = test_pp.parser(TRANSCENDENTAL_CASES[i])
+        objective_result = data.select(
+            test_result.alias("result")
+        ).to_numpy()
+        h = np.hstack(objective_result )
+        for j in range(len(h)): 
+            print(h[j], expected[i][j])
+            print(TRANSCENDENTAL_CASES[i])
+            assert math.isclose( h[j], expected[i][j],rel_tol=1e-5)
+
+
+def test_simple_rounding():
+    a = np.random.uniform(100,size=(5))
+    expected = [
+        np.absolute(a),
+        np.ceil(a),
+        np.floor(a),
+    ]
+    var_dic = {"A":a}
+    data = pl.DataFrame(var_dic)
+    test_pp = pp.parser_polars()
+    for i in range(len(ROUNDING_CASES)):
+        test_result = test_pp.parser(ROUNDING_CASES[i])
+        objective_result = data.select(
+            test_result.alias("result")
+        ).to_numpy()
+        h = np.hstack(objective_result )
+        for j in range(len(h)): 
+            print(h[j], expected[i][j])
+            print(ROUNDING_CASES[i])
+            assert math.isclose( h[j], expected[i][j],rel_tol=1e-5)
+
+def test_simple_trigonometric():
+    x = np.random.uniform(-1,1,size=(5))
+    x1 = np.random.uniform(1,100,size=(5))
+    expected = [
+        np.arccos(x),
+        np.arccosh(x1),
+        np.arcsin(x),
+        np.arcsinh(x),
+        np.arctan(x),
+        np.arctanh(x),
+        np.cos(x),
+        np.cosh(x),
+        np.sin(x),
+        np.sinh(x),
+        np.tan(x),
+        np.tanh(x),
+    ]
+    var_dic = {"X":x,"X1":x1}
+    data = pl.DataFrame(var_dic)
+    test_pp = pp.parser_polars()
+    for i in range(len(TRIGONOMETRIC_CASES)):
+        test_result = test_pp.parser(TRIGONOMETRIC_CASES[i])
+        objective_result = data.select(
+            test_result.alias("result")
+        ).to_numpy()
+        h = np.hstack(objective_result )
+        for j in range(len(h)): 
+            print(h[j], expected[i][j])
+            print(TRIGONOMETRIC_CASES[i])
+            assert math.isclose( h[j], expected[i][j],rel_tol=1e-5)
