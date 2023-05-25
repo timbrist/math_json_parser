@@ -10,9 +10,12 @@ data = json.load(f)
 
 print(type(data))
 
-
-
-
+from parser_numexpr import parser_numexpr
+test = parser_numexpr()
+testlist = ["Substract",["Squre","x1"],"x2"]
+str_expr = test.parser(testlist)
+expr = lambda x1,x2: eval(str_expr)
+print(expr(2,3))
 #TODO: initial value, lower bound and upper will be 1. none, 2. a function, 3. number
 # def json2moproblem(json_data:dict)-> ScalarMOProblem:
 def json2moproblem(json_data):
@@ -33,6 +36,9 @@ def json2moproblem(json_data):
     #     obj_dic = objectives_dict[k]
     #     if isinstance(obj_dic,dict):
     #         obj = ScalarObjective()
+
+    obj1 = ScalarObjective("f_1", lambda x: expr(x[:,0],x[:,1]))
+
     obj1 = ScalarObjective("f_1", lambda x: x[:,0]**2 - x[:,1])
     obj2 = ScalarObjective("f_2", lambda x: x[:,1]**2 - 3*x[:,0])
     OBJS = [obj1,obj2]
