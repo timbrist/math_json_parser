@@ -1,0 +1,61 @@
+{
+    "Constants":null,
+    "Varibles":{
+        "Length": 3,
+        "Var1":{
+            "ShortName":"x1",
+            "Type":"RealNumber",
+            "LowerBound":0.2,
+            "UperBound":15,
+            "InitialValue":null,
+            "__Discription":"This is first varible, it present sth "
+        },
+        "Var2":{
+            "ShortName":"x2",
+            "Type":"RealNumber",
+            "LowerBound":0,
+            "UperBound":20,
+            "InitialValue":null,
+            "__Discription":"This is second varible, it present sth "
+        },
+        "Var3":{
+            "ShortName":"x3",
+            "Type":"RealNumber",
+            "LowerBound":0,
+            "UperBound":40,
+            "InitialValue":null
+        }
+    },
+    "Objectives":{
+        "Length":2,
+        "Obj1":{
+            "ShortName":"f1",
+            "Func":[
+                "Add",
+                ["Multiply", 29.4, "x_1"],
+                ["Multiply", 0.6, "x_2", "x_3"]
+              ],
+            "Min": true,
+            "Ideal":null,
+            "Nadir":null,
+            "__Preference":null,
+            "__Discription":" minimize total cost of concrete and reinforcing steel of the beam"
+        },
+        "Obj2":{
+            "ShortName":"f2",
+            "Func":[
+                "Sum",
+                ["Max", ["Multiply", "g_i", "x"], 0],
+                ["Triple", ["Hold", "i"], 1, 2]
+              ],
+            "Min": true,
+            "Ideal":null,
+            "Nadir":null,
+            "__Preference":null,
+            "__Discription":"minimize the sum of constraint violations."
+        }
+    },
+    "Constraints":null,
+    "__ProblemName":"Reinforced concrete beam design problem",
+    "__ProblemDescription":"This problem is from DESDEO example Engineering real-world test problems on https://desdeo-problem.readthedocs.io/en/latest/problems/engineering_real_world.html#re-21-four-bar-truss-design-problem"
+}

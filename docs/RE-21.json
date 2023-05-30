@@ -1,0 +1,112 @@
+{
+    "Constants":{
+        "Length":5,
+        "C1":{
+            "ShortName":"F",
+            "Value":10,
+            "__Discription":"Force, unit: kN"
+        },
+        "C2":{
+            "ShortName":"E",
+            "Value":2e5,
+            "__Discription":"Energe, unit: kN/cm^2"
+        },
+        "C3":{
+            "ShortName":"L",
+            "Value":200,
+            "__Discription":"Length, unit: cm"
+        },
+        "C4":{
+            "ShortName":"sigma",
+            "Value":10,
+            "__Discription":"Length, unit: kN/cm^2"
+        },
+        "C5":{
+            "ShortName":"a",
+            "Valule":["Divide","F","sigma"],
+            "__Discription":"use for Variable bounds "
+        }
+    },
+    "Varibles":{
+        "Length": 4,
+        "Var1":{
+            "ShortName":"x1",
+            "Type":"RealNumber",
+            "LowerBound":["a"],
+            "UperBound":["Multiply",3,"a"],
+            "InitialValue":null,
+            "__Discription":"This is first varible, it present sth "
+        },
+        "Var2":{
+            "ShortName":"x2",
+            "Type":"RealNumber",
+            "LowerBound":["Multiply",["Sqrt",2],"a"],
+            "UperBound":["Multiply",3,"a"],
+            "InitialValue":null,
+            "__Discription":"This is second varible, it present sth "
+        },
+        "Var3":{
+            "ShortName":"x3",
+            "Type":"RealNumber",
+            "LowerBound":["Multiply",["Sqrt",2],"a"],
+            "UperBound":["Multiply",3,"a"],
+            "InitialValue":null
+        },
+        "Var4":{
+            "ShortName":"x4",
+            "Type":"RealNumber",
+            "LowerBound":["a"],
+            "UperBound":["Multiply",3,"a"],
+            "InitialValue":null
+        }
+    },
+    "Objectives":{
+        "Length":2,
+        "Obj1":{
+            "ShortName":"f1",
+            "Func":[
+                [
+                  "Multiply",
+                  "L",
+                  [
+                    "Add",
+                    ["Multiply", ["Sqrt", 2], "x_2"],
+                    ["Multiply", 2, "x_1"],
+                    ["Sqrt", "x_3"],
+                    "x_4"
+                  ]
+                ]
+              ],
+            "Min": true,
+            "Ideal":null,
+            "Nadir":null,
+            "__Discription":"minimize structural volume"
+        },
+        "Obj2":{
+            "ShortName":"f2",
+            "Func":[
+                "Divide",
+                [
+                  "Multiply",
+                  "F",
+                  "L",
+                  [
+                    "Add",
+                    ["Divide", 2, "x_1"],
+                    ["Divide", 2, "x_4"],
+                    ["Divide", ["Multiply", 2, ["Sqrt", 2]], "x_2"],
+                    ["Divide", ["Multiply", -2, ["Sqrt", 2]], "x_2"]
+                  ]
+                ],
+                "E"
+              ],
+            "Min": true,
+            "Ideal":null,
+            "Nadir":null,
+            "__Discription":"minimize the joint displacement"
+        }
+    },
+    "Constraints":null,
+    "__ProblemName":"Four bar truss design problem",
+    "__ProblemDescription":"This problem is from DESDEO example Engineering real-world test problems on https://desdeo-problem.readthedocs.io/en/latest/problems/engineering_real_world.html#re-21-four-bar-truss-design-problem"
+}
