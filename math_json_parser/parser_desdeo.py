@@ -1,44 +1,24 @@
 from desdeo_problem import Variable, ScalarObjective, ScalarConstraint, ScalarMOProblem
-import json
-# Opening JSON file
-f = open('math_json_parser/moo_json_format.json')
-  
-# returns JSON object as 
-# a dictionary
-data = json.load(f)
-
-
 from parser_numexpr import parser_numexpr
 import numpy as np
-import pandas as pd
-import copy
-# test = parser_numexpr()
-# testlist = ["Substract",["Squre","x1"],"x2"]
-# str_expr = test.parser(testlist)
-# d = {}
-# a = "x1,x2"
-# b = "x2"
-# print(str_expr)
-# lambda_str = "lambda {}:{}".format(a,str_expr)
-# expr = eval(lambda_str)
-# print(expr(2,3))
-#TODO: initial value, lower bound and upper will be 1. none, 2. a function, 3. number
-# def json2moproblem(json_data:dict)-> ScalarMOProblem:
 
-
-
-#be careful with this function, eval and desdeo lambda should be together outside the local domain .
-def str2lambda(str_expr):
+#be careful with this function, eval and desdeo lambda should be TOGETHER OUTSIDE the local life cycle .
+def str2objectives(str_expr):
     lambda_str = "lambda x:{}".format(str_expr)
     desdeo_expr = eval(lambda_str)
     return desdeo_expr
 
+def str2constraints(str_expr):
+    lambda_str = "lambda x,_:{}".format(str_expr)
+    desdeo_expr = eval(lambda_str)
+    return desdeo_expr
+
+#convert the json dictionary into desdeo standard problems
 def json2moproblem(json_data):
     #parsing the variables into desdeo variable.
     desdeo_vars = []
     var_names = []
     desdeo_objs = []
-    obj_names = []
     desdeo_cons = []
     ne_parser = parser_numexpr() #parse function 
 
@@ -55,8 +35,8 @@ def json2moproblem(json_data):
         desdeo_vars.append(x)
     objectives_dict = json_data["Objectives"]
     obj_len = objectives_dict["Length"]
-    for k in range(obj_len):
-        obj_name = "Obj"+str(k+1)
+    for j in range(obj_len):
+        obj_name = "Obj"+str(j+1)
         obj_dic = objectives_dict[obj_name]
         #handle the objective expressions
         str_expr = ne_parser.parser(obj_dic["Func"])
@@ -65,23 +45,41 @@ def json2moproblem(json_data):
         for name in var_names:
             str_expr = str_expr.replace(name,str("x[:,{}]".format(name_index)))
             name_index+=1
-        desdeo_expr = str2lambda(str_expr)
+        desdeo_expr = str2objectives(str_expr)
         desdeo_obj = ScalarObjective(obj_dic["ShortName"],
                             desdeo_expr)
         desdeo_objs.append(desdeo_obj)
 
-    #testing 
-    test = np.array([[2,3],[4,5]])
-    for obj in desdeo_objs:
-        print(obj.name)
-        print(obj.evaluator(test))
-    cons1 = ScalarConstraint("c_1", 2, 2, lambda x, _: 10 - (x[:,0] + x[:,1]))
-    CONS = [cons1]
+    constrainst_dict = json_data["Constraints"]
+    con_len = constrainst_dict["Length"]
+    for k in range(con_len):
+        con_name = "Con"+str(k+1)
+        con_dic = constrainst_dict[con_name]
+        #handle the objective expressions
+        str_expr = ne_parser.parser(con_dic["Func"])
+        print(str_expr)
+        name_index = 0
+        for name in var_names:
+            str_expr = str_expr.replace(name,str("x[:,{}]".format(name_index)))
+            name_index+=1
+        desdeo_expr = str2constraints(str_expr)
+        desdeo_con = ScalarConstraint(con_dic["ShortName"],var_len,obj_len,
+                            desdeo_expr)
+        desdeo_cons.append(desdeo_con)
+
+    # Args: name, n of variables, n of objectives, callable
     problem = ScalarMOProblem(objectives=desdeo_objs,
                             variables = desdeo_vars,
-                            constraints= CONS)
+                            constraints= desdeo_cons)
     return problem
 
+#Testing 
+import json
+# Opening JSON file
+f = open('math_json_parser/moo_json_format.json')  
+# returns JSON object as 
+# a dictionary
+data = json.load(f)
 problem = json2moproblem(data)
 print("N of objectives:", problem.n_of_objectives)
 print("N of variables:", problem.n_of_variables)
