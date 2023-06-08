@@ -13,6 +13,8 @@ def str2constraints(str_expr):
     desdeo_expr = eval(lambda_str)
     return desdeo_expr
 
+
+    
 #convert the json dictionary into desdeo standard problems
 def json2moproblem(json_data):
     #parsing the variables into desdeo variable.
@@ -21,51 +23,65 @@ def json2moproblem(json_data):
     desdeo_objs = []
     desdeo_cons = []
     ne_parser = parser_numexpr() #parse function 
-
+    constants = {}
+    constants_dict = json_data["Constants"]
+    if constants_dict is not None:
+        c_len = constants_dict["Length"]
+        for i in range(c_len):
+            c_name = "C"+str(i+1)
+            c_dic = constants_dict[c_name]
+            value = c_dic["Value"]
+            if isinstance(value, list):
+                str_expr = ne_parser.parser(value)
+                # value = eval(str_expr)
+            constants[c_name] = value
     variables_dict = json_data["Varibles"]
-    var_len = variables_dict["Length"]
-    for i in range(var_len):
-        var_name = "Var"+str(i+1)
-        var_dic = variables_dict[var_name]
-        var_names.append(var_dic["ShortName"])
-        x = Variable(var_dic["ShortName"], 
-                    var_dic["InitialValue"], 
-                    var_dic["LowerBound"],
-                    var_dic["UpperBound"])
-        desdeo_vars.append(x)
+    if variables_dict is not None:
+        var_len = variables_dict["Length"]
+        for i in range(var_len):
+            var_name = "Var"+str(i+1)
+            var_dic = variables_dict[var_name]
+            var_names.append(var_dic["ShortName"])
+            x = Variable(var_dic["ShortName"], 
+                        var_dic["InitialValue"], 
+                        var_dic["LowerBound"],
+                        var_dic["UpperBound"])
+            desdeo_vars.append(x)
     objectives_dict = json_data["Objectives"]
-    obj_len = objectives_dict["Length"]
-    for j in range(obj_len):
-        obj_name = "Obj"+str(j+1)
-        obj_dic = objectives_dict[obj_name]
-        #handle the objective expressions
-        str_expr = ne_parser.parser(obj_dic["Func"])
-        print(str_expr)
-        name_index = 0
-        for name in var_names:
-            str_expr = str_expr.replace(name,str("x[:,{}]".format(name_index)))
-            name_index+=1
-        desdeo_expr = str2objectives(str_expr)
-        desdeo_obj = ScalarObjective(obj_dic["ShortName"],
-                            desdeo_expr)
-        desdeo_objs.append(desdeo_obj)
+    if objectives_dict is not None:
+        obj_len = objectives_dict["Length"]
+        for j in range(obj_len):
+            obj_name = "Obj"+str(j+1)
+            obj_dic = objectives_dict[obj_name]
+            #handle the objective expressions
+            str_expr = ne_parser.parser(obj_dic["Func"])
+            print(str_expr)
+            name_index = 0
+            for name in var_names:
+                str_expr = str_expr.replace(name,str("x[:,{}]".format(name_index)))
+                name_index+=1
+            desdeo_expr = str2objectives(str_expr)
+            desdeo_obj = ScalarObjective(obj_dic["ShortName"],
+                                desdeo_expr)
+            desdeo_objs.append(desdeo_obj)
 
     constrainst_dict = json_data["Constraints"]
-    con_len = constrainst_dict["Length"]
-    for k in range(con_len):
-        con_name = "Con"+str(k+1)
-        con_dic = constrainst_dict[con_name]
-        #handle the objective expressions
-        str_expr = ne_parser.parser(con_dic["Func"])
-        print(str_expr)
-        name_index = 0
-        for name in var_names:
-            str_expr = str_expr.replace(name,str("x[:,{}]".format(name_index)))
-            name_index+=1
-        desdeo_expr = str2constraints(str_expr)
-        desdeo_con = ScalarConstraint(con_dic["ShortName"],var_len,obj_len,
-                            desdeo_expr)
-        desdeo_cons.append(desdeo_con)
+    if constrainst_dict is not None:
+        con_len = constrainst_dict["Length"]
+        for k in range(con_len):
+            con_name = "Con"+str(k+1)
+            con_dic = constrainst_dict[con_name]
+            #handle the objective expressions
+            str_expr = ne_parser.parser(con_dic["Func"])
+            print(str_expr)
+            name_index = 0
+            for name in var_names:
+                str_expr = str_expr.replace(name,str("x[:,{}]".format(name_index)))
+                name_index+=1
+            desdeo_expr = str2constraints(str_expr)
+            desdeo_con = ScalarConstraint(con_dic["ShortName"],var_len,obj_len,
+                                desdeo_expr)
+            desdeo_cons.append(desdeo_con)
 
     # Args: name, n of variables, n of objectives, callable
     problem = ScalarMOProblem(objectives=desdeo_objs,
@@ -76,7 +92,7 @@ def json2moproblem(json_data):
 #Testing 
 import json
 # Opening JSON file
-f = open('math_json_parser/moo_json_format.json')  
+f = open('math_json_parser/RE-21.json')  
 # returns JSON object as 
 # a dictionary
 data = json.load(f)
