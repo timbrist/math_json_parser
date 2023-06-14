@@ -10,7 +10,7 @@ class ProblemParser:
         self.constants = self.constants_parser(json_data["Constants"])
         self.varibles,self.var_names = self.varibles_parser(json_data["Varibles"])
         self.objectives = self.objectives_parser(json_data["Objectives"])
-
+        self.constants = self.constraints_parser(json_data["Constraints"])
     def json_to_sympy(self,json_expr):
         if isinstance(json_expr, str):
             # Handle variable symbols
@@ -23,15 +23,28 @@ class ProblemParser:
             if json_expr[0] == "Add":
                 # Addition operation
                 return sp.Add(*[self.json_to_sympy(sub_expr) for sub_expr in json_expr[1:]])
+            if json_expr[0] == "Substract":
+                # Addition operation
+                result = self.json_to_sympy(json_expr[1]) 
+                for sub_expr in json_expr[2:]:
+                    result = result - self.json_to_sympy(sub_expr)
+                return result
             elif json_expr[0] == "Multiply":
                 # Multiplication operation
                 return sp.Mul(*[self.json_to_sympy(sub_expr) for sub_expr in json_expr[1:]])
             elif json_expr[0] == "Sqrt":
                 # Square root operation
                 return sp.sqrt(self.json_to_sympy(json_expr[1]))
+            elif json_expr[0] == "Squre":
+                # Square root operation
+                return self.json_to_sympy(json_expr[1])**2
             elif json_expr[0] == "Divide":
                 # Square root operation
-                return self.json_to_sympy(json_expr[1])/self.json_to_sympy(json_expr[2])
+                # return self.json_to_sympy(json_expr[1])/self.json_to_sympy(json_expr[2])
+                result = self.json_to_sympy(json_expr[1]) 
+                for sub_expr in json_expr[2:]:
+                    result = result / self.json_to_sympy(sub_expr)
+                return result
         else:
             raise ValueError("Invalid JSON expression")
 
@@ -42,7 +55,21 @@ class ProblemParser:
         print(f)
         value = f.evalf(subs=dict) 
         return value
-
+    def function_parser(self, function_dict, isConstraint=False):
+        sympy_func = self.json_to_sympy(function_dict)
+        print(sympy_func)
+        if self.constants is not None:
+            sympy_func = sympy_func.subs(self.constants)
+        symbol_names = ','.join(self.var_names)
+        # print(symbol_names)
+        val = sp.symbols(symbol_names)
+        lambda_func = sp.lambdify(val, sympy_func)
+        if isConstraint:
+            desdeo_func = lambda x,_ : lambda_func(*[x[:,i] for i in range(len(self.var_names))])
+        else:
+            desdeo_func = lambda x : lambda_func(*[x[:,i] for i in range(len(self.var_names))])
+        return desdeo_func
+    
     def constants_parser(self, constants_dict):
         if constants_dict is None: return None
         #parse constants
@@ -95,25 +122,32 @@ class ProblemParser:
         for i in range(obj_len):
             obj_name = "Obj"+str(i+1)
             obj_dic = objectives_dict[obj_name]
-            #handle the objective expressions
-            # str_expr = self.ne_parser.parser(obj_dic["Func"])
-            sympy_func = self.json_to_sympy(obj_dic["Func"])
-            sympy_func = sympy_func.subs(self.constants)
-            symbol_names = ','.join(self.var_names)
-            # print(symbol_names)
-            val = sp.symbols(symbol_names)
-            lambda_func = sp.lambdify(val, sympy_func)
-            desdeo_func = lambda x : lambda_func(*[x[:,i] for i in range(len(self.var_names))])
+
+            desdeo_func = self.function_parser(obj_dic["Func"])
 
             desdeo_obj = ScalarObjective(obj_dic["ShortName"],
                                 desdeo_func)
-            desdeo_objs.append(desdeo_obj)
-
+            desdeo_objs.append(desdeo_obj)        
         return desdeo_objs
+    
+    def constraints_parser(self, constraints_dict):
+        if constraints_dict is None: return None
+        desdeo_cons = []
+        con_len = constraints_dict["Length"]
+        for i in range(con_len):
+            con_name = "Con"+str(i+1)
+            con_dic = constraints_dict[con_name]
+            desdeo_func = self.function_parser(con_dic["Func"],isConstraint=True)
+
+            desdeo_con = ScalarConstraint(con_dic["ShortName"],2,2,
+                                desdeo_func)
+            desdeo_cons.append(desdeo_con)        
+        return desdeo_cons
     def get_desdeo_problem(self):
+        
         problem = ScalarMOProblem(objectives=self.objectives,
                                 variables = self.varibles,
-                                constraints=None)
+                                constraints=self.constants)
         return problem
 
     def json2moproblem(self, json_data):
@@ -276,16 +310,13 @@ def json2moproblem(json_data):
 #Testing 
 import json
 # Opening JSON file
+
 f = open('math_json_parser/RE-21.json')  
-# returns JSON object as 
-# a dictionary
 
 data = json.load(f)
 pp = ProblemParser(data)
-# test_constants = pp.constant_parser(data["Constants"])
 problem = pp.get_desdeo_problem()
-# print(test_constants)
-# problem = pp.json2moproblem(data)
+
 print("N of objectives:", problem.n_of_objectives)
 print("N of variables:", problem.n_of_variables)
 print("N of constraints:", problem.n_of_constraints)
@@ -297,3 +328,23 @@ res3 = problem.evaluate(np.array([[6, 3,7,4], [4,3,8,6], [7,4,5,6]]))
 print("Single feasible decision variables:", res1.objectives, "with constraint values", res1.constraints)
 print("Single non-feasible decision variables:", res2.objectives, "with constraint values", res2.constraints)
 print("Multiple decision variables:", res3.objectives, "with constraint values", res3.constraints)
+
+
+
+
+# f = open('math_json_parser/moo_json_format.json')  
+# data = json.load(f)
+# pp = ProblemParser(data)
+# problem = pp.get_desdeo_problem()
+
+# print("N of objectives:", problem.n_of_objectives)
+# print("N of variables:", problem.n_of_variables)
+# print("N of constraints:", problem.n_of_constraints)
+
+# res1 = problem.evaluate(np.array([2, 4]))
+# res2 = problem.evaluate(np.array([6, 6]))
+# res3 = problem.evaluate(np.array([[6, 3], [4,3], [7,4]]))
+
+# print("Single feasible decision variables:", res1.objectives, "with constraint values", res1.constraints)
+# print("Single non-feasible decision variables:", res2.objectives, "with constraint values", res2.constraints)
+# print("Multiple decision variables:", res3.objectives, "with constraint values", res3.constraints)
