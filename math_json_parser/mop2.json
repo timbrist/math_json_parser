@@ -1,30 +1,38 @@
 {
     "Constants":null,
     "Varibles":{
-        "Length": 2,
+        "Length": 3,
         "Var1":{
             "ShortName":"x1",
             "Type":"RealNumber",
-            "LowerBound":-0.5,
-            "UpperBound":0.5,
-            "InitialValue":0,
+            "LowerBound":-2,
+            "UpperBound":5,
+            "InitialValue":1,
             "__Discription":"This is first varible, it present sth "
         },
         "Var2":{
             "ShortName":"x2",
             "Type":"RealNumber",
-            "LowerBound":-0.5,
-            "UpperBound":0.5,
-            "InitialValue":0,
+            "LowerBound":-1,
+            "UpperBound":10,
+            "InitialValue":1,
+            "__Discription":"This is second varible, it present sth "
+        },
+        "Var3":{
+            "ShortName":"x3",
+            "Type":"RealNumber",
+            "LowerBound":0,
+            "UpperBound":3,
+            "InitialValue":1,
             "__Discription":"This is second varible, it present sth "
         }
     },
     "Objectives":{
-        "Length":2,
+        "Length":3,
         "Obj1":{
             "ShortName":"f_1",
             "__Type":"Nonlinear",
-            "Func":["Substract",["Squre","x1"],"x2"],
+            "Func":["Add","x1","x2","x3"],
             "Max": false,
             "Ideal":0,
             "Nadir":10,
@@ -33,8 +41,17 @@
         },
         "Obj2":{
             "ShortName":"f_2",
-            "Func":["Substract",["Squre","x2"],["Multiply",3,"x1"]],
+            "Func":["Multiply","x1","x2","x3"],
             "Max": false,
+            "Ideal":0,
+            "Nadir":10,
+            "__Preference":6,
+            "__Discription":"This is second objective, is present sth"
+        },
+        "Obj3":{
+            "ShortName":"f_3",
+            "Func":["Add",["Multiply","x1","x2"],"x3"],
+            "Max": true,
             "Ideal":0,
             "Nadir":10,
             "__Preference":6,
@@ -46,7 +63,7 @@
         "Con1":{
             "__Type":"Linear",
             "ShortName":"g1",
-            "Func":["Substract",10,["Add","x1","x2"]]
+            "Func":["Substract", ["Add","x1","x2","x3"],10]
         }
     },
     "__ProblemName":"name",

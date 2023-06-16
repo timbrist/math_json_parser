@@ -90,7 +90,7 @@ class parser_polars:
                         elif parameter_len == 2:
                             return d[operator](self.parser(textlist[1]), self.parser(textlist[2]))
                         else:
-                            print("number of parameter is exceed")
+                            return d[operator](self.parser(textlist[1:] ))
             #if the element is a constant than it should just return the number
             elif isinstance(textlist, (int, float, complex) ):
                 return textlist

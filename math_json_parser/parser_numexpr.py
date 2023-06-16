@@ -83,6 +83,8 @@ class parser_numexpr:
 
     def parser(self,textlist):
         try:
+            if isinstance(textlist, str):
+                return textlist
             if isinstance(textlist, list):
                 operator = textlist[0]
                 parameter_len =  len(textlist[1:])  

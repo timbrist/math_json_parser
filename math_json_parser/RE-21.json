@@ -76,7 +76,7 @@
                     "x4"
                   ]
                 ],
-            "Min": true,
+            "Max": false,
             "Ideal":null,
             "Nadir":null,
             "__Discription":"minimize structural volume"
@@ -99,7 +99,7 @@
                 ],
                 "E"
               ],
-            "Min": true,
+            "Max": false,
             "Ideal":null,
             "Nadir":null,
             "__Discription":"minimize the joint displacement"
