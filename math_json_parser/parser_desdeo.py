@@ -1,4 +1,4 @@
-from desdeo_problem import Variable, ScalarObjective, ScalarConstraint, ScalarMOProblem
+from desdeo_problem import Variable, ScalarObjective, ScalarConstraint, ScalarMOProblem,MOProblem
 from parser_numexpr import parser_numexpr
 import numpy as np
 import sympy as sp
@@ -18,7 +18,6 @@ class ProblemParser:
                 # Addition operation
                 return sp.Add(*[self.json_to_sympy(sub_expr) for sub_expr in json_expr[1:]])
             if json_expr[0] == "Substract":
-                # Addition operation
                 result = self.json_to_sympy(json_expr[1]) 
                 for sub_expr in json_expr[2:]:
                     result = result - self.json_to_sympy(sub_expr)
@@ -26,19 +25,18 @@ class ProblemParser:
             elif json_expr[0] == "Multiply":
                 # Multiplication operation
                 return sp.Mul(*[self.json_to_sympy(sub_expr) for sub_expr in json_expr[1:]])
-            elif json_expr[0] == "Sqrt":
-                # Square root operation
-                return sp.sqrt(self.json_to_sympy(json_expr[1]))
-            elif json_expr[0] == "Squre":
-                # Square root operation
-                return self.json_to_sympy(json_expr[1])**2
             elif json_expr[0] == "Divide":
-                # Square root operation
-                # return self.json_to_sympy(json_expr[1])/self.json_to_sympy(json_expr[2])
                 result = self.json_to_sympy(json_expr[1]) 
                 for sub_expr in json_expr[2:]:
                     result = result / self.json_to_sympy(sub_expr)
                 return result
+            elif json_expr[0] == "Sqrt":
+                return sp.sqrt(self.json_to_sympy(json_expr[1]))
+            elif json_expr[0] == "Squre":
+                return self.json_to_sympy(json_expr[1])**2
+            elif json_expr[0] == "Max":
+                return self.json_to_sympy(json_expr[1])**2
+
         else:
             raise ValueError("Invalid JSON expression")
 
@@ -118,11 +116,11 @@ class ProblemParser:
             # test = np.array([2, 4])
             # print(desdeo_func(test))
             desdeo_obj = ScalarObjective(obj_dic["ShortName"],
-                                desdeo_func)
+                                desdeo_func, maximize=[obj_dic["Max"]])
             desdeo_objs.append(desdeo_obj)        
         return desdeo_objs
     
-    def constraints_parser(self, constraints_dict,constants,var_name,n_objective_funs):
+    def constraints_parser(self, constraints_dict,constants,var_name,objectives):
         if constraints_dict is None: return None
         desdeo_cons = []
         con_len = constraints_dict["Length"]
@@ -131,7 +129,7 @@ class ProblemParser:
             con_dic = constraints_dict[con_name]
             desdeo_func = self.function_parser(con_dic["Func"],constants, var_name,isConstraint=True)
             
-            desdeo_con = ScalarConstraint(con_dic["ShortName"],len(var_name),n_objective_funs,
+            desdeo_con = ScalarConstraint(con_dic["ShortName"],len(var_name),len(objectives),
                                 desdeo_func)
             desdeo_cons.append(desdeo_con)        
         return desdeo_cons
@@ -144,9 +142,9 @@ class ProblemParser:
         print(varibles, var_names )
         objectives = self.objectives_parser(json_data["Objectives"], constants, var_names)
         print(objectives)
-        constraints = self.constraints_parser(json_data["Constraints"],constants, var_names,len(objectives))
+        constraints = self.constraints_parser(json_data["Constraints"],constants, var_names,objectives)
 
-        problem = ScalarMOProblem(objectives=objectives,
+        problem = MOProblem(objectives=objectives,
                                 variables = varibles,
                                 constraints=constraints)
         return problem
@@ -176,21 +174,29 @@ import json
 # print("Multiple decision variables:", res3.objectives, "with constraint values", res3.constraints)
 
 
+f = open('math_json_parser/mop2.json')  
 
-
-f = open('math_json_parser/moo_json_format.json')  
 data = json.load(f)
 pp = ProblemParser()
 problem = pp.json_to_desdeo(data)
 
-print("N of objectives:", problem.n_of_objectives)
-print("N of variables:", problem.n_of_variables)
-print("N of constraints:", problem.n_of_constraints)
+data = np.asarray([[1, -1, 0], [5, 5, 2]])
+res= problem.evaluate(data)
+print(res)
 
-res1 = problem.evaluate(np.array([2, 4]))
-res2 = problem.evaluate(np.array([6, 6]))
-res3 = problem.evaluate(np.array([[6, 3], [4,3], [7,4]]))
+# f = open('math_json_parser/moo_json_format.json')  
+# data = json.load(f)
+# pp = ProblemParser()
+# problem = pp.json_to_desdeo(data)
 
-print("Single feasible decision variables:", res1.objectives, "with constraint values", res1.constraints)
-print("Single non-feasible decision variables:", res2.objectives, "with constraint values", res2.constraints)
-print("Multiple decision variables:", res3.objectives, "with constraint values", res3.constraints)
+# print("N of objectives:", problem.n_of_objectives)
+# print("N of variables:", problem.n_of_variables)
+# print("N of constraints:", problem.n_of_constraints)
+
+# res1 = problem.evaluate(np.array([2, 4]))
+# res2 = problem.evaluate(np.array([6, 6]))
+# res3 = problem.evaluate(np.array([[6, 3], [4,3], [7,4]]))
+
+# print("Single feasible decision variables:", res1.objectives, "with constraint values", res1.constraints)
+# print("Single non-feasible decision variables:", res2.objectives, "with constraint values", res2.constraints)
+# print("Multiple decision variables:", res3.objectives, "with constraint values", res3.constraints)
